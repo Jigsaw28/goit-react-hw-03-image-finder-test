@@ -8,9 +8,10 @@ export const imagesApi = async (text, page) => {
   try {
     const response = await axios.get(
       `?q=${text}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      );
-      console.log(response)
+    );
+    const images = await response.data;
+    return images;
   } catch (error) {
-      console.log(error)
+    console.log(error);
   }
 };
