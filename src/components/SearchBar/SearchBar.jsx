@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { toast } from 'react-toastify';
 
 export class SearchBar extends Component {
   state = {
@@ -7,12 +8,16 @@ export class SearchBar extends Component {
 
   handleChange = ({ target: { value, name } }) => {
     this.setState({
-      inputSearch: value,
+      inputSearch: value.toLowerCase(),
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
+    if (this.state.inputSearch.trim() === '') {
+      toast.error('Enter something')
+      return
+    }
     this.props.onSubmit(this.state);
     this.reset();
   };
