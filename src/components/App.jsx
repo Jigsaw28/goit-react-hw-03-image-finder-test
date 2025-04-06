@@ -16,28 +16,23 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const prevSearch = prevState.inputSearch;
-    const nextSearch = this.state.inputSearch;
+    const { inputSearch, pages } = this.state;
 
-    if (prevSearch !== nextSearch) {
+    if (prevState.inputSearch !== inputSearch || prevState.pages !== pages) {
       this.setState({ loading: true });
-      setTimeout(
-        () =>
-          imagesApi(nextSearch, this.state.page)
-            .then(({ hits }) => {
-              if (hits.length === 0) {
-                return toast.error(
-                  `Don't found name ${nextSearch} , enter something else please!`
-                );
-              }
-              this.setState({
-                images: [...hits],
-              });
-            })
-            .catch(error => console.log(error))
-            .finally(() => this.setState({ loading: false })),
-        2000
-      );
+      imagesApi(inputSearch, pages)
+        .then(({ hits }) => {
+          if (hits.length === 0) {
+            return toast.error(
+              `Don't found name ${inputSearch} , enter something else please!`
+            );
+          }
+          this.setState(prevState => ({
+            images: [...prevState.images, ...hits],
+          }));
+        })
+        .catch(error => console.log(error))
+        .finally(() => this.setState({ loading: false }));
     }
   }
 
@@ -47,13 +42,20 @@ export class App extends Component {
     });
   };
 
+  onLoadMoreButton = () => {
+    this.setState(prevState => ({ pages: prevState.pages + 1 }));
+  };
+
   render() {
     const { loading, images } = this.state;
     return (
       <Container>
         <SearchBar onSubmit={this.formSubmitHandler} />
-        {loading ? <Loader /> : <ImageGallery images={images} />}
-        {!loading && images.length > 0 && <Button />}
+        <ImageGallery images={images} />
+        {loading && <Loader />}
+        {!loading && images.length > 0 && (
+          <Button onLoadMore={this.onLoadMoreButton} />
+        )}
         <ToastContainer autoClose={3000} />
       </Container>
     );
