@@ -6,6 +6,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { imagesApi } from 'api/imagesApi';
 import { Loader } from './Loader/Loader';
+import { onLoadMoreScroll } from 'utils/scroll';
 
 export class App extends Component {
   state = {
@@ -34,6 +35,7 @@ export class App extends Component {
         .catch(error => console.log(error))
         .finally(() => this.setState({ loading: false }));
     }
+    onLoadMoreScroll(pages);
   }
 
   formSubmitHandler = ({ inputSearch }) => {
