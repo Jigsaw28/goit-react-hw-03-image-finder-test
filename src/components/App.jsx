@@ -7,6 +7,7 @@ import { Button } from './Button/Button';
 import { imagesApi } from 'api/imagesApi';
 import { Loader } from './Loader/Loader';
 import { onLoadMoreScroll } from 'utils/scroll';
+import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -14,6 +15,8 @@ export class App extends Component {
     images: [],
     loading: false,
     pages: 1,
+    showModal: false,
+    modalImageUrl: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -41,7 +44,20 @@ export class App extends Component {
   formSubmitHandler = ({ inputSearch }) => {
     this.setState({
       inputSearch,
+      pages: 1,
+      images: [],
     });
+  };
+
+  toggleModal = modalImageUrl => {
+    this.setState(({ showModal }) => ({
+      modalImageUrl,
+      showModal: !showModal,
+    }));
+  };
+
+  closeModal = () => {
+    this.setState({ showModal: false });
   };
 
   onLoadMoreButton = () => {
@@ -49,14 +65,17 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images } = this.state;
+    const { loading, images, showModal, modalImageUrl } = this.state;
     return (
       <Container>
         <SearchBar onSubmit={this.formSubmitHandler} />
-        <ImageGallery images={images} />
+        <ImageGallery images={images} showModal={this.toggleModal} />
         {loading && <Loader />}
         {!loading && images.length > 0 && (
           <Button onLoadMore={this.onLoadMoreButton} />
+        )}
+        {showModal && (
+          <Modal openModal={modalImageUrl} closeModal={this.closeModal} />
         )}
         <ToastContainer autoClose={3000} />
       </Container>
